@@ -1,6 +1,7 @@
+import ui.GymClubGUI;
+
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Welcome to Gym Club Membership Fee Calculator");
+        javax.swing.SwingUtilities.invokeLater(() -> new GymClubGUI());
     }
-
 }
