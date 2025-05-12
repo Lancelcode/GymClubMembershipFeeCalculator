@@ -1,59 +1,85 @@
 package utils;
 
-import models.*;
+import models.MembershipRecord;
+import models.MemberFeeStrategy;
+import models.MemberFeeFactory;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDate;
+import java.util.*;
 
 public class MemberManager {
 
-    private List<Member> memberList;
+    private Map<String, Queue<MembershipRecord>> memberMap;
     private double totalFeesCollected;
-
-    private final String FILE_PATH = "data/members.txt";
+    private final String MEMBER_FILE = "data/members.txt";
 
     public MemberManager() {
-        this.memberList = new ArrayList<>();
+        this.memberMap = new HashMap<>();
         this.totalFeesCollected = 0.0;
         loadMembersFromFile();
     }
 
-    public void addMember(Member member) {
-        if (member != null) {
-            memberList.add(member);
-            totalFeesCollected += member.calculateMembershipFee();
-            saveMembersToFile();  // auto-save
+    public void addMember(String name, String grade) {
+        String key = name.toLowerCase();
+        boolean isFirstTime = !memberMap.containsKey(key);
+
+        MemberFeeStrategy strategy = MemberFeeFactory.getStrategy(grade);
+        double fee = strategy.calculateFee(isFirstTime);
+
+        MembershipRecord newRecord = new MembershipRecord(
+                name,
+                strategy.getGrade(),
+                fee,
+                LocalDate.now(),
+                "current"
+        );
+
+        Queue<MembershipRecord> history = memberMap.getOrDefault(key, new LinkedList<>());
+
+        for (MembershipRecord r : history) {
+            r.setStatus("past");
         }
+
+        history.add(newRecord);
+        memberMap.put(key, history);
+        totalFeesCollected += fee;
+        saveMembersToFile();
     }
 
-    public List<Member> getAllMembers() {
-        return new ArrayList<>(memberList);
+    public List<String> getAllMembers() {
+        List<String> members = new ArrayList<>();
+        for (Map.Entry<String, Queue<MembershipRecord>> entry : memberMap.entrySet()) {
+            MembershipRecord latest = getCurrentRecord(entry.getValue());
+            if (latest != null) {
+                members.add(latest.getName() + ";" + latest.getGrade());
+            }
+        }
+        return members;
     }
 
     public double getTotalFeesCollected() {
         return totalFeesCollected;
     }
 
-    public Member findMemberByName(String name) {
-        for (Member m : memberList) {
-            if (m.getName().equalsIgnoreCase(name)) {
-                return m;
-            }
-        }
-        return null;
+    public MembershipRecord findCurrentRecordByName(String name) {
+        Queue<MembershipRecord> history = memberMap.get(name.toLowerCase());
+        if (history == null) return null;
+        return getCurrentRecord(history);
     }
 
-    public void clearAll() {
-        memberList.clear();
-        totalFeesCollected = 0.0;
-        saveMembersToFile();
+    public List<MembershipRecord> getHistoryForMember(String name) {
+        Queue<MembershipRecord> history = memberMap.get(name.toLowerCase());
+        if (history == null) return new ArrayList<>();
+        return new ArrayList<>(history);
     }
 
-    protected void saveMembersToFile() {
-        try (PrintWriter writer = new PrintWriter(new FileWriter(FILE_PATH))) {
-            for (Member m : memberList) {
-                writer.printf("%s;%s\n", m.getName(), m.getMembershipGrade());
+    private void saveMembersToFile() {
+        try (PrintWriter writer = new PrintWriter(new FileWriter(MEMBER_FILE))) {
+            for (Queue<MembershipRecord> records : memberMap.values()) {
+                for (MembershipRecord r : records) {
+                    writer.println(r.toFileString());
+                }
             }
         } catch (IOException e) {
             System.err.println("Error saving members: " + e.getMessage());
@@ -61,42 +87,32 @@ public class MemberManager {
     }
 
     private void loadMembersFromFile() {
-        File file = new File(FILE_PATH);
+        File file = new File(MEMBER_FILE);
         if (!file.exists()) return;
 
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
-
             while ((line = reader.readLine()) != null) {
-                String[] parts = line.split(";");
-                if (parts.length == 2) {
-                    String name = parts[0].trim();
-                    String grade = parts[1].trim();
-
-                    Member m;
-                    switch (grade.toLowerCase()) {
-                        case "standard":
-                            m = new StandardMember(name);
-                            break;
-                        case "premium":
-                            m = new PremiumMember(name);
-                            break;
-                        case "vip":
-                            m = new VIPMember(name);
-                            break;
-                        default:
-                            m = null;
-                            break;
-                    }
-
-                    if (m != null) {
-                        memberList.add(m);
-                        totalFeesCollected += m.calculateMembershipFee();
-                    }
+                MembershipRecord record = MembershipRecord.fromFileString(line);
+                if (record != null) {
+                    String key = record.getName().toLowerCase();
+                    Queue<MembershipRecord> history = memberMap.getOrDefault(key, new LinkedList<>());
+                    history.add(record);
+                    memberMap.put(key, history);
+                    totalFeesCollected += record.getFee();
                 }
             }
         } catch (IOException e) {
             System.err.println("Error loading members: " + e.getMessage());
         }
+    }
+
+    private MembershipRecord getCurrentRecord(Queue<MembershipRecord> history) {
+        for (MembershipRecord r : history) {
+            if (r.getStatus().equalsIgnoreCase("current")) {
+                return r;
+            }
+        }
+        return null;
     }
 }

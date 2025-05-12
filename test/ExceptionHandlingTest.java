@@ -1,31 +1,50 @@
 package test;
 
-import models.StandardMember;
+import models.MembershipRecord;
 import org.junit.jupiter.api.Test;
 import utils.MemberManager;
 
-import java.io.File;
+import java.io.*;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ExceptionHandlingTest {
 
     @Test
-    public void testInvalidFilePathHandling() {
-        MemberManager manager = new MemberManager() {
-            @Override
-            protected void saveMembersToFile() {
-                try {
-                    // Simulate file write failure
-                    File file = new File("/invalid_path/members.txt");
-                    file.createNewFile(); // likely to fail
-                } catch (Exception e) {
-                    assertTrue(e instanceof Exception, "Should handle exceptions gracefully");
-                }
-            }
-        };
+    public void testLoadFromMissingFileDoesNotCrash() {
+        File file = new File("data/members.txt");
+        if (file.exists()) file.delete();
 
-        // Try adding member and ensure no crash
-        assertDoesNotThrow(() -> manager.addMember(new StandardMember("Test")));
+        assertDoesNotThrow(MemberManager::new);
+    }
+
+    @Test
+    public void testSaveMembersIOExceptionHandledGracefully() throws Exception {
+        MemberManager manager = new MemberManager();
+        manager.addMember("Faulty", "VIP");
+
+        // Use reflection to break the MEMBER_FILE path
+        Field field = MemberManager.class.getDeclaredField("MEMBER_FILE");
+        field.setAccessible(true);
+        field.set(manager, "/invalid/path/members.txt");
+
+        // Should handle the error internally without crashing
+        assertDoesNotThrow(() -> {
+            Method saveMethod = MemberManager.class.getDeclaredMethod("saveMembersToFile");
+            saveMethod.setAccessible(true);
+            ((java.lang.reflect.Method) saveMethod).invoke(manager);
+        });
+    }
+
+    @Test
+    public void testCorruptedLineInFileSkipsGracefully() throws Exception {
+        File file = new File("data/members.txt");
+        try (PrintWriter writer = new PrintWriter(file)) {
+            writer.println("Corrupted Line Without Proper Format");
+        }
+
+        assertDoesNotThrow(MemberManager::new);
     }
 }

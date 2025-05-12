@@ -1,101 +1,75 @@
 package test;
 
-import models.StandardMember;
-import models.PremiumMember;
-import models.VIPMember;
-import models.Member;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import models.MembershipRecord;
+import org.junit.jupiter.api.*;
 import utils.MemberManager;
 
+import java.io.File;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class MemberManagerTest {
 
-    private MemberManager manager;
+    private static final String TEST_FILE_PATH = "data/members.txt";
 
     @BeforeEach
-    public void setUp() {
-        manager = new MemberManager();
+    public void clearDataFile() {
+        File file = new File(TEST_FILE_PATH);
+        if (file.exists()) file.delete();
     }
 
     @Test
-    public void testAddMemberAndTotalFee() {
-        Member m1 = new StandardMember("Alice");
-        Member m2 = new PremiumMember("Bob");
-
-        manager.addMember(m1);
-        manager.addMember(m2);
-
-        double expectedTotal = m1.calculateMembershipFee() + m2.calculateMembershipFee();
-        assertEquals(expectedTotal, manager.getTotalFeesCollected(), 0.01);
+    public void testAddFirstTimeMemberIncludesJournal() {
+        MemberManager manager = new MemberManager();
+        manager.addMember("Alice", "Standard");
+        MembershipRecord record = manager.findCurrentRecordByName("Alice");
+        assertNotNull(record);
+        assertEquals(108.0, record.getFee(), 0.01);
+        assertEquals("Standard", record.getGrade());
     }
 
     @Test
-    public void testGetAllMembers() {
-        manager.addMember(new StandardMember("Alice"));
-        manager.addMember(new VIPMember("Charlie"));
+    public void testAddSameMemberTwiceJournalOnlyOnce() {
+        MemberManager manager = new MemberManager();
+        manager.addMember("Bob", "Standard");
+        manager.addMember("Bob", "Premium");
 
-        List<Member> members = manager.getAllMembers();
-        assertEquals(2, members.size());
-        assertEquals("Alice", members.get(0).getName());
-        assertEquals("Charlie", members.get(1).getName());
+        List<MembershipRecord> history = manager.getHistoryForMember("Bob");
+        assertEquals(2, history.size());
+
+        MembershipRecord current = manager.findCurrentRecordByName("Bob");
+        assertEquals("Premium", current.getGrade());
+        assertEquals(150.0, current.getFee(), 0.01); // no journal fee
+
+        double total = history.stream().mapToDouble(MembershipRecord::getFee).sum();
+        assertEquals(108.0 + 150.0, total, 0.01);
     }
 
     @Test
-    public void testFindMemberByName() {
-        Member m1 = new VIPMember("Charlie");
-        manager.addMember(m1);
+    public void testQueuePreservesStatus() {
+        MemberManager manager = new MemberManager();
+        manager.addMember("Cara", "VIP");
+        manager.addMember("Cara", "Standard");
 
-        Member found = manager.findMemberByName("charlie"); // case-insensitive
-        assertNotNull(found);
-        assertEquals("Charlie", found.getName());
+        List<MembershipRecord> history = manager.getHistoryForMember("Cara");
+        assertEquals(2, history.size());
+
+        boolean hasCurrent = history.stream().anyMatch(r -> r.getStatus().equalsIgnoreCase("current"));
+        long pastCount = history.stream().filter(r -> r.getStatus().equalsIgnoreCase("past")).count();
+
+        assertTrue(hasCurrent);
+        assertEquals(1, pastCount);
     }
 
     @Test
-    public void testFindNonExistentMember() {
-        Member found = manager.findMemberByName("NonExistent");
-        assertNull(found);
-    }
+    public void testTotalFeesCollected() {
+        MemberManager manager = new MemberManager();
+        manager.addMember("Dan", "Standard");
+        manager.addMember("Eve", "Premium");
+        manager.addMember("Dan", "VIP");
 
-    @Test
-    public void testClearAll() {
-        manager.addMember(new StandardMember("Alice"));
-        manager.clearAll();
-
-        assertEquals(0, manager.getAllMembers().size());
-        assertEquals(0.0, manager.getTotalFeesCollected(), 0.01);
-    }
-
-
-    @Test
-    public void testAddDuplicateNames() {
-        Member m1 = new StandardMember("Sam");
-        Member m2 = new PremiumMember("Sam");
-
-        manager.addMember(m1);
-        manager.addMember(m2);
-
-        assertEquals(2, manager.getAllMembers().size(), "Should allow duplicate names");
-    }
-
-    @Test
-    public void testSearchEmptyString() {
-        Member result = manager.findMemberByName("");
-        assertNull(result, "Searching with empty string should return null");
-    }
-
-    @Test
-    public void testSearchNull() {
-        Member result = manager.findMemberByName(null);
-        assertNull(result, "Searching with null should return null");
-    }
-
-    @Test
-    public void testGetAllMembersWhenEmpty() {
-        List<Member> members = manager.getAllMembers();
-        assertTrue(members.isEmpty(), "Should return empty list if no members added");
+        double total = manager.getTotalFeesCollected();
+        assertEquals(108 + 158 + 200, total, 0.01);
     }
 }
