@@ -77,7 +77,7 @@ public class MemberManager {
     private void saveMembersToFile() {
         try {
             new File("data").mkdirs();
-            System.out.println("[DEBUG] Saving members to file...");
+            System.out.println("Saving members to file...");
             PrintWriter writer = new PrintWriter(new FileWriter(MEMBER_FILE));
             for (Queue<MembershipRecord> records : memberMap.values()) {
                 for (MembershipRecord r : records) {
