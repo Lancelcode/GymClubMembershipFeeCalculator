@@ -71,7 +71,7 @@ public class GymClubGUI extends JFrame {
             if (existing != null) {
                 String currentGrade = existing.getGrade();
                 int confirm = JOptionPane.showConfirmDialog(this,
-                        String.format("You already have a subscription with '%s'.\nWould you like to change to '%s'?\nThe new level will take effect immediately. You will lose access to your current '%s' membership and any related benefits.",
+                        String.format("You already have a subscription with '%s'.\nWould you like to change to '%s'?\nThe new membership will take effect immediately. You will lose access to your current '%s' membership and any related benefits.",
                                 currentGrade, newGrade, currentGrade),
                         "Confirm Membership Change",
                         JOptionPane.YES_NO_OPTION);

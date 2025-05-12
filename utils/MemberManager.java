@@ -75,12 +75,15 @@ public class MemberManager {
     }
 
     private void saveMembersToFile() {
-        try (PrintWriter writer = new PrintWriter(new FileWriter(MEMBER_FILE))) {
+        try {
+            new File("data").mkdirs(); // Ensure 'data' folder exists
+            PrintWriter writer = new PrintWriter(new FileWriter(MEMBER_FILE));
             for (Queue<MembershipRecord> records : memberMap.values()) {
                 for (MembershipRecord r : records) {
                     writer.println(r.toFileString());
                 }
             }
+            writer.close();
         } catch (IOException e) {
             System.err.println("Error saving members: " + e.getMessage());
         }
