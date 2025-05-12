@@ -74,7 +74,7 @@ public class MemberManager {
         return new ArrayList<>(history);
     }
 
-    private void saveMembersToFile() {
+    protected void saveMembersToFile() {
         try {
             new File("data").mkdirs();
             System.out.println("Saving members to file...");
@@ -90,7 +90,7 @@ public class MemberManager {
         }
     }
 
-    private void loadMembersFromFile() {
+    protected void loadMembersFromFile() {
         File file = new File(MEMBER_FILE);
         if (!file.exists()) {
             System.out.println("No existing member file. Starting with empty state.");
