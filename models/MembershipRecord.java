@@ -42,21 +42,23 @@ public class MembershipRecord {
     }
 
     public String toFileString() {
-        return String.format("%s;%s;%.2f;%s;%s", name, grade, fee, date, status);
+        return name + ";" + grade + ";" + String.format("%.2f", fee) + ";" + date + ";" + status;
     }
 
     public static MembershipRecord fromFileString(String line) {
-        String[] parts = line.split(";");
-        if (parts.length != 5) return null;
-
         try {
-            String name = parts[0].trim();
-            String grade = parts[1].trim();
-            double fee = Double.parseDouble(parts[2]);
-            LocalDate date = LocalDate.parse(parts[3].trim());
-            String status = parts[4].trim();
+            String[] parts = line.split(";");
+            if (parts.length != 5) return null;
+
+            String name = parts[0];
+            String grade = parts[1];
+            double fee = Double.parseDouble(parts[2].replace(",", ".")); // handle decimal comma
+            LocalDate date = LocalDate.parse(parts[3]);
+            String status = parts[4];
+
             return new MembershipRecord(name, grade, fee, date, status);
         } catch (Exception e) {
+            System.out.println("[DEBUG] Error parsing line: " + line + " — " + e.getMessage());
             return null;
         }
     }

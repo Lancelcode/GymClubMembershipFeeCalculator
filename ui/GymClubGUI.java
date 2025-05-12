@@ -59,7 +59,7 @@ public class GymClubGUI extends JFrame {
             String name = nameField.getText().trim();
             String newGrade = (String) gradeBox.getSelectedItem();
 
-            if (name.isEmpty() || name.length() < 2 || name.matches("\\d+")) {
+            if (name.isEmpty() || name.length() < 1 || name.matches("\\d+")) {
                 JOptionPane.showMessageDialog(this,
                         "Invalid name.\n• It must not be empty.\n• Must be at least 2 characters.\n• Cannot be just numbers.",
                         "Invalid Input",
@@ -67,32 +67,29 @@ public class GymClubGUI extends JFrame {
                 return;
             }
 
-            MembershipRecord existing = manager.findCurrentRecordByName(name);
-            if (existing != null) {
-                String currentGrade = existing.getGrade();
-                int confirm = JOptionPane.showConfirmDialog(this,
-                        String.format("You already have a subscription with '%s'.\nWould you like to change to '%s'?\nThe new membership will take effect immediately. You will lose access to your current '%s' membership and any related benefits.",
-                                currentGrade, newGrade, currentGrade),
+            MembershipRecord current = manager.findCurrentRecordByName(name);
+
+            if (current != null) {
+                String currentGrade = current.getGrade();
+                int choice = JOptionPane.showConfirmDialog(this,
+                        "You already have a subscription with '" + currentGrade + "'.\nChange to '" + newGrade + "'?\nYou will lose any benefits from the current membership.",
                         "Confirm Membership Change",
                         JOptionPane.YES_NO_OPTION);
 
-                if (confirm != JOptionPane.YES_OPTION) return;
+                if (choice != JOptionPane.YES_OPTION) return;
             }
 
             manager.addMember(name, newGrade);
-            JOptionPane.showMessageDialog(this, newGrade + " membership for '" + name + "' has been recorded.");
+            JOptionPane.showMessageDialog(this, newGrade + " member '" + name + "' added!");
         }
     }
 
     private void showMemberList() {
-        List<String> members = manager.getAllMembers();
         StringBuilder list = new StringBuilder();
-        for (String entry : members) {
+        for (String entry : manager.getAllMembers()) {
             String[] parts = entry.split(";");
-            if (parts.length == 2) {
-                list.append("- ").append(parts[0])
-                        .append(" (").append(parts[1]).append(")\n");
-            }
+            list.append("- ").append(parts[0])
+                    .append(" (Grade: ").append(parts[1]).append(")\n");
         }
         if (list.length() == 0) list.append("No members registered.");
         JOptionPane.showMessageDialog(this, list.toString(), "Registered Members", JOptionPane.INFORMATION_MESSAGE);
@@ -102,36 +99,35 @@ public class GymClubGUI extends JFrame {
         String name = JOptionPane.showInputDialog(this, "Enter member name to view receipt:");
         if (name == null || name.trim().isEmpty()) return;
 
-        MembershipRecord current = manager.findCurrentRecordByName(name.trim());
-        if (current == null) {
+        List<MembershipRecord> history = manager.getHistoryForMember(name.trim());
+        if (history.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Member not found.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        StringBuilder receipt = new StringBuilder();
-        receipt.append("Statement for ").append(current.getDate().getMonth()).append(" ")
-                .append(current.getDate().getYear()).append(" for ").append(current.getName()).append(" - CURRENT ")
-                .append(current.getGrade()).append(" Membership\n");
-        receipt.append("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
-        receipt.append(current.getGrade()).append(" Member Enrolment\n   Date: ").append(current.getDate()).append("\n\n");
-        receipt.append("Purchases:\n   1: Membership Fee: £").append(String.format("%.2f", current.getFee())).append("\n");
-        receipt.append("Total Price: £").append(String.format("%.2f", current.getFee())).append("\n");
-        receipt.append("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
+        StringBuilder display = new StringBuilder();
+        display.append("--------------------------------------------------------------\n");
+        display.append(String.format("%-12s %-10s %-10s %-8s\n", "Date", "Grade", "Fee", "Status"));
+        display.append("--------------------------------------------------------------\n");
 
-        JOptionPane.showMessageDialog(this, receipt.toString(), "Current Membership Receipt", JOptionPane.INFORMATION_MESSAGE);
-
-        int showAll = JOptionPane.showConfirmDialog(this, "Would you like to view full receipt history?", "View History", JOptionPane.YES_NO_OPTION);
-        if (showAll == JOptionPane.YES_OPTION) {
-            List<MembershipRecord> history = manager.getHistoryForMember(name.trim());
-            StringBuilder historyText = new StringBuilder("Receipt History for " + name + ":\n\n");
-            for (MembershipRecord r : history) {
-                historyText.append("- ").append(r.getGrade())
-                        .append(" (£").append(String.format("%.2f", r.getFee())).append(") on ")
-                        .append(r.getDate());
-                if (r.getStatus().equalsIgnoreCase("current")) historyText.append(" (Current)");
-                historyText.append("\n");
-            }
-            JOptionPane.showMessageDialog(this, historyText.toString(), "Full Receipt History", JOptionPane.INFORMATION_MESSAGE);
+        double totalPaid = 0.0;
+        for (MembershipRecord record : history) {
+            display.append(String.format("%-12s %-10s £%-9.2f %-8s\n",
+                    record.getDate().toString(),
+                    record.getGrade(),
+                    record.getFee(),
+                    record.getStatus()));
+            totalPaid += record.getFee();
         }
+        display.append("--------------------------------------------------------------\n");
+        display.append(String.format("Total paid across all memberships: £%.2f\n", totalPaid));
+
+        JTextArea textArea = new JTextArea(display.toString());
+        textArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
+        textArea.setEditable(false);
+        JScrollPane scrollPane = new JScrollPane(textArea);
+        scrollPane.setPreferredSize(new Dimension(500, 300));
+
+        JOptionPane.showMessageDialog(this, scrollPane, "Membership Receipt History", JOptionPane.INFORMATION_MESSAGE);
     }
 }

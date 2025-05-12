@@ -76,7 +76,8 @@ public class MemberManager {
 
     private void saveMembersToFile() {
         try {
-            new File("data").mkdirs(); // Ensure 'data' folder exists
+            new File("data").mkdirs();
+            System.out.println("[DEBUG] Saving members to file...");
             PrintWriter writer = new PrintWriter(new FileWriter(MEMBER_FILE));
             for (Queue<MembershipRecord> records : memberMap.values()) {
                 for (MembershipRecord r : records) {
@@ -91,11 +92,20 @@ public class MemberManager {
 
     private void loadMembersFromFile() {
         File file = new File(MEMBER_FILE);
-        if (!file.exists()) return;
+        if (!file.exists()) {
+            System.out.println("No existing member file. Starting with empty state.");
+            return;
+        }
+
+        System.out.println("Loading members from file: " + MEMBER_FILE);
 
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
+            int count = 0;
+
             while ((line = reader.readLine()) != null) {
+                System.out.println("Read line: " + line);
+
                 MembershipRecord record = MembershipRecord.fromFileString(line);
                 if (record != null) {
                     String key = record.getName().toLowerCase();
@@ -103,8 +113,13 @@ public class MemberManager {
                     history.add(record);
                     memberMap.put(key, history);
                     totalFeesCollected += record.getFee();
+                    count++;
+                } else {
+                    System.out.println("Skipped malformed line.");
                 }
             }
+
+            System.out.println("Finished loading " + count + " membership records.");
         } catch (IOException e) {
             System.err.println("Error loading members: " + e.getMessage());
         }
