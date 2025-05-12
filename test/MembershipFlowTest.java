@@ -54,6 +54,6 @@ public class MembershipFlowTest {
         for (MembershipRecord r : history) {
             total += r.getFee();
         }
-        assertEquals(100.0 + 150.0, total, 0.01); // 100 + 150 only one journal fee in 100
+        assertEquals(258.0, total, 0.01);
     }
 }

@@ -22,7 +22,9 @@ public class MemberManager {
 
     public void addMember(String name, String grade) {
         String key = name.toLowerCase();
-        boolean isFirstTime = !memberMap.containsKey(key);
+        Queue<MembershipRecord> history = memberMap.getOrDefault(key, new LinkedList<>());
+
+        boolean isFirstTime = history.isEmpty();
 
         MemberFeeStrategy strategy = MemberFeeFactory.getStrategy(grade);
         double fee = strategy.calculateFee(isFirstTime);
@@ -34,8 +36,6 @@ public class MemberManager {
                 LocalDate.now(),
                 "current"
         );
-
-        Queue<MembershipRecord> history = memberMap.getOrDefault(key, new LinkedList<>());
 
         for (MembershipRecord r : history) {
             r.setStatus("past");
@@ -77,7 +77,7 @@ public class MemberManager {
     protected void saveMembersToFile() {
         try {
             new File("data").mkdirs();
-            System.out.println("Saving members to file...");
+            System.out.println("[DEBUG] Saving members to file...");
             PrintWriter writer = new PrintWriter(new FileWriter(MEMBER_FILE));
             for (Queue<MembershipRecord> records : memberMap.values()) {
                 for (MembershipRecord r : records) {
@@ -93,18 +93,18 @@ public class MemberManager {
     protected void loadMembersFromFile() {
         File file = new File(MEMBER_FILE);
         if (!file.exists()) {
-            System.out.println("No existing member file. Starting with empty state.");
+            System.out.println("[DEBUG] No existing member file. Starting with empty state.");
             return;
         }
 
-        System.out.println("Loading members from file: " + MEMBER_FILE);
+        System.out.println("[DEBUG] Loading members from file: " + MEMBER_FILE);
 
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
             int count = 0;
 
             while ((line = reader.readLine()) != null) {
-                System.out.println("Read line: " + line);
+                System.out.println("[DEBUG] Read line: " + line);
 
                 MembershipRecord record = MembershipRecord.fromFileString(line);
                 if (record != null) {
@@ -115,11 +115,11 @@ public class MemberManager {
                     totalFeesCollected += record.getFee();
                     count++;
                 } else {
-                    System.out.println("Skipped malformed line.");
+                    System.out.println("[DEBUG] Skipped malformed line.");
                 }
             }
 
-            System.out.println("Finished loading " + count + " membership records.");
+            System.out.println("[DEBUG] Finished loading " + count + " membership records.");
         } catch (IOException e) {
             System.err.println("Error loading members: " + e.getMessage());
         }
