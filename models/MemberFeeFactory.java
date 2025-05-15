@@ -1,22 +1,28 @@
 package models;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class MemberFeeFactory {
 
-    /**
-     * Returns the appropriate MemberFeeStrategy based on membership grade.
-     * @param grade The membership grade string (e.g., "Standard")
-     * @return The corresponding MemberFeeStrategy implementation
-     */
-    public static MemberFeeStrategy getStrategy(String grade) {
-        switch (grade.toLowerCase()) {
-            case "standard":
-                return new StandardFeeStrategy();
-            case "premium":
-                return new PremiumFeeStrategy();
-            case "vip":
-                return new VIPFeeStrategy();
-            default:
-                throw new IllegalArgumentException("Invalid membership grade: " + grade);
+    private static final Map<String, Class<? extends MemberFeeStrategy>> strategyMap = new HashMap<>();
+
+    static {
+        strategyMap.put("standard", StandardFeeStrategy.class);
+        strategyMap.put("premium", PremiumFeeStrategy.class);
+        strategyMap.put("vip", VIPFeeStrategy.class);
+    }
+
+    public static <T extends MemberFeeStrategy> T getStrategy(String grade) {
+        Class<? extends MemberFeeStrategy> clazz = strategyMap.get(grade.toLowerCase());
+        if (clazz == null) {
+            throw new IllegalArgumentException("Invalid membership grade: " + grade);
+        }
+        try {
+            return (T) clazz.getDeclaredConstructor().newInstance();
+        } catch (Exception e) {
+            throw new RuntimeException("Error instantiating fee strategy for grade: " + grade, e);
         }
     }
 }
+

@@ -58,7 +58,7 @@ public class MembershipRecord {
 
             return new MembershipRecord(name, grade, fee, date, status);
         } catch (Exception e) {
-            System.out.println("[DEBUG] Error parsing line: " + line + " — " + e.getMessage());
+            System.out.println(" Error parsing line: " + line + " — " + e.getMessage());
             return null;
         }
     }
