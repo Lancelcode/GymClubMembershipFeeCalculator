@@ -21,6 +21,10 @@ public class MemberManager {
     }
 
     public void addMember(String name, String grade) {
+        if (name == null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("Name cannot be null, empty, or whitespace.");
+        }
+
         String key = name.toLowerCase();
         Queue<MembershipRecord> history = memberMap.getOrDefault(key, new LinkedList<>());
 

@@ -1,8 +1,2 @@
-lit;Standard;108,00;2025-05-12;past
-lit;Premium;150,00;2025-05-12;past
-lit;VIP;200,00;2025-05-12;current
-sparky;VIP;208,00;2025-05-12;past
-sparky;Premium;150,00;2025-05-12;past
-sparky;Standard;100,00;2025-05-12;past
-Sparky;Premium;150,00;2025-05-15;current
-Paul;Premium;158,00;2025-05-13;current
+Bob;Standard;108,00;2025-05-15;past
+Bob;Premium;150,00;2025-05-15;current
