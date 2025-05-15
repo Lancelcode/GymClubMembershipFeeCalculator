@@ -77,7 +77,7 @@ public class MemberManager {
     protected void saveMembersToFile() {
         try {
             new File("data").mkdirs();
-            System.out.println("[DEBUG] Saving members to file...");
+            System.out.println("Saving members to file...");
             PrintWriter writer = new PrintWriter(new FileWriter(MEMBER_FILE));
             for (Queue<MembershipRecord> records : memberMap.values()) {
                 for (MembershipRecord r : records) {
@@ -93,18 +93,18 @@ public class MemberManager {
     protected void loadMembersFromFile() {
         File file = new File(MEMBER_FILE);
         if (!file.exists()) {
-            System.out.println("[DEBUG] No existing member file. Starting with empty state.");
+            System.out.println("No existing member file. Starting with empty state.");
             return;
         }
 
-        System.out.println("[DEBUG] Loading members from file: " + MEMBER_FILE);
+        System.out.println("Loading members from file: " + MEMBER_FILE);
 
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
             int count = 0;
 
             while ((line = reader.readLine()) != null) {
-                System.out.println("[DEBUG] Read line: " + line);
+                System.out.println("Read line: " + line);
 
                 MembershipRecord record = MembershipRecord.fromFileString(line);
                 if (record != null) {
