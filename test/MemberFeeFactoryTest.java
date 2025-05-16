@@ -17,6 +17,10 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class MemberFeeFactoryTest {
 
+    /**
+     * Test to verify that the factory correctly returns a StandardFeeStrategy instance
+     * and that the strategy reports the correct grade.
+     */
     @Test
     public void testStandardFactory() {
         MemberFeeStrategy strategy = MemberFeeFactory.getStrategy("Standard");
@@ -24,6 +28,10 @@ public class MemberFeeFactoryTest {
         assertEquals("Standard", strategy.getGrade());
     }
 
+    /**
+     * Test to verify that the factory correctly returns a PremiumFeeStrategy instance
+     * and that the strategy reports the correct grade.
+     */
     @Test
     public void testPremiumFactory() {
         MemberFeeStrategy strategy = MemberFeeFactory.getStrategy("Premium");
@@ -31,6 +39,10 @@ public class MemberFeeFactoryTest {
         assertEquals("Premium", strategy.getGrade());
     }
 
+    /**
+     * Test to verify that the factory correctly returns a VIPFeeStrategy instance
+     * and that the strategy reports the correct grade.
+     */
     @Test
     public void testVIPFactory() {
         MemberFeeStrategy strategy = MemberFeeFactory.getStrategy("VIP");
@@ -38,16 +50,22 @@ public class MemberFeeFactoryTest {
         assertEquals("VIP", strategy.getGrade());
     }
 
+    /**
+     * Test to confirm that the factory treats membership grade input case-insensitively.
+     */
     @Test
     public void testCaseInsensitiveFactory() {
         MemberFeeStrategy strategy = MemberFeeFactory.getStrategy("standard");
         assertTrue(strategy instanceof StandardFeeStrategy);
     }
 
+    /**
+     * Test to ensure the factory throws an IllegalArgumentException for an invalid grade.
+     */
     @Test
     public void testInvalidGradeThrowsException() {
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            MemberFeeFactory.getStrategy("Gold");
+            MemberFeeFactory.getStrategy("Gold");  // "Gold" is not a supported grade
         });
         assertTrue(exception.getMessage().contains("Invalid membership grade"));
     }
