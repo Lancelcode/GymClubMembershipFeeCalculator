@@ -1,20 +1,31 @@
 package models;
 
 /**
- * Represents a strategy for calculating membership fees based on different grades or types
- * of membership. Classes implementing this interface provide specific fee calculation logic
- * and specify the associated membership grade.
+ * Represents a strategy interface for calculating membership fees for different
+ * membership grades (e.g., Standard, Premium, VIP).
+ *
+ * This interface defines the contract that all membership fee strategy classes must follow.
+ * Implementing classes will provide their own logic for fee calculation and grade identification.
+ *
+ * This design follows the Strategy Pattern, allowing the system to easily switch between
+ * different membership fee policies without modifying existing code.
  */
 public interface MemberFeeStrategy {
+
     /**
-     * Calculates the membership fee based on whether to include the journal fee.
-     * @param includeJournal true if journal fee should be added
-     * @return the total membership fee
+     * Calculates the membership fee.
+     *
+     * @param includeJournal true if the journal fee (£8) should be included
+     *                       (e.g., for first-time registration), false otherwise
+     * @return The total calculated fee as a double
      */
     double calculateFee(boolean includeJournal);
 
     /**
-     * Returns the membership grade name (e.g., "Standard").
+     * Returns the name of the membership grade associated with the strategy.
+     * For example: "Standard", "Premium", or "VIP"
+     *
+     * @return Grade name as a string
      */
     String getGrade();
 }
