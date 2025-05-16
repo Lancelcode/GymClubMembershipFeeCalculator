@@ -1,11 +1,6 @@
+Cara;VIP;208,00;2025-05-16;past
+Cara;Standard;100,00;2025-05-16;current
 Bob;Standard;108,00;2025-05-16;past
 Bob;Premium;150,00;2025-05-16;current
-Paco;VIP;208,00;2025-05-16;past
-paco;Standard;100,00;2025-05-16;current
-juan;Standard;108,00;2025-05-16;past
-juan;Standard;100,00;2025-05-16;past
-juan;Standard;100,00;2025-05-16;current
-LUCY;VIP;208,00;2025-05-16;past
-lucy;Standard;100,00;2025-05-16;past
-LUCY;VIP;200,00;2025-05-16;past
-lucy;Standard;100,00;2025-05-16;current
+Alice;Standard;108,00;2025-05-16;current
+Faulty;VIP;208,00;2025-05-16;current
