@@ -119,11 +119,11 @@ public class MemberManager {
                     totalFeesCollected += record.getFee();
                     count++;
                 } else {
-                    System.out.println("[DEBUG] Skipped malformed line.");
+                    System.out.println(" Skipped malformed line.");
                 }
             }
 
-            System.out.println("[DEBUG] Finished loading " + count + " membership records.");
+            System.out.println(" Finished loading " + count + " membership records.");
         } catch (IOException e) {
             System.err.println("Error loading members: " + e.getMessage());
         }

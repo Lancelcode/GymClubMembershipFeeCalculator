@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class BoundaryTest {
 
-    private static final String TEST_FILE_PATH = "data/members.txt";
+    private static final String TEST_FILE_PATH = "data/test_members.txt";
 
     @BeforeEach
     public void clearFile() {
