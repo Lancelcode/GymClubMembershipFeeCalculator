@@ -6,4 +6,6 @@ juan;Standard;108,00;2025-05-16;past
 juan;Standard;100,00;2025-05-16;past
 juan;Standard;100,00;2025-05-16;current
 LUCY;VIP;208,00;2025-05-16;past
+lucy;Standard;100,00;2025-05-16;past
+LUCY;VIP;200,00;2025-05-16;past
 lucy;Standard;100,00;2025-05-16;current
