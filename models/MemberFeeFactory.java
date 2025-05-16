@@ -3,6 +3,12 @@ package models;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * A factory class responsible for creating instances of specific
+ * membership fee strategies based on a provided membership grade.
+ * This factory allows dynamic determination and instantiation of
+ * membership fee strategy implementations.
+ */
 public class MemberFeeFactory {
 
     private static final Map<String, Class<? extends MemberFeeStrategy>> strategyMap = new HashMap<>();

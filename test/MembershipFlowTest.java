@@ -8,6 +8,24 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * The MembershipFlowTest class contains unit tests to validate the membership
+ * management workflow, specifically focusing on upgrading memberships and
+ * maintaining a consistent record history. This test ensures the integrity
+ * of operations such as adding new members, upgrading member grades, maintaining
+ * historical records, and calculating total fees.
+ *
+ * It includes the following key test scenarios:
+ * - Adding a new standard-grade member and verifying their membership record.
+ * - Upgrading an existing member to a premium grade and validating the changes.
+ * - Checking the historical consistency of membership grades, ensuring past
+ *   states are correctly recorded while maintaining the current membership state.
+ * - Calculating the cumulative fee for a member's entire history ensuring no
+ *   duplicate fees are counted for journal records.
+ *
+ * TestMemberManager is utilized for unit testing to avoid file I/O operations.
+ * It overrides file-related methods to ensure an in-memory testing environment.
+ */
 public class MembershipFlowTest {
 
     // In-memory subclass of MemberManager to avoid file I/O

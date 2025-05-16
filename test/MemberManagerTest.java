@@ -9,6 +9,12 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Unit tests for the MemberManager class.
+ * This test suite verifies the functionality of the MemberManager class, ensuring
+ * operations such as adding members, managing membership records, and calculating fees
+ * are performed correctly.
+ */
 public class MemberManagerTest {
 
     private static final String TEST_FILE_PATH = "data/members.txt";

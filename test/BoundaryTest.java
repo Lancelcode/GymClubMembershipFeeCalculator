@@ -9,6 +9,11 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * The BoundaryTest class contains unit tests for validating the boundary and edge cases
+ * for the MemberManager class implementation, including scenarios focusing on proper input validation,
+ * case sensitivity, exception handling, and correct state management of members.
+ */
 public class BoundaryTest {
 
     private static final String TEST_FILE_PATH = "data/test_members.txt";

@@ -8,6 +8,17 @@ import java.io.*;
 import java.time.LocalDate;
 import java.util.*;
 
+/**
+ * The MemberManager is responsible for managing member data, including
+ * the registration, retrieval, and history of members. It supports operations
+ * such as adding a member, viewing all members, retrieving a member's membership
+ * history, and calculating total fees collected.
+ *
+ * MemberManager handles persistence by saving and loading member records
+ * to and from a file. It uses a `Map` where each member is identified by their
+ * name (case insensitive), mapping to a queue of membership records. The most
+ * recent "current" record is marked as such, while older records are marked as "past."
+ */
 public class MemberManager {
 
     private Map<String, Queue<MembershipRecord>> memberMap;

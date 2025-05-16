@@ -2,6 +2,13 @@ package models;
 
 import java.time.LocalDate;
 
+/**
+ * Represents a record for a membership, storing details such as the member's name,
+ * membership grade, membership fee, registration date, and membership status.
+ * This class provides methods to retrieve and modify these attributes,
+ * as well as utilities to serialize and deserialize membership records
+ * to and from a file-compatible string format.
+ */
 public class MembershipRecord {
     private String name;
     private String grade;

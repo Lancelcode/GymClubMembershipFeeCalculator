@@ -10,6 +10,20 @@ import java.lang.reflect.Method;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * ExceptionHandlingTest contains unit tests to validate that the MemberManager
+ * class handles exceptions and edge cases gracefully without causing system crashes.
+ * The class ensures the robustness of the MemberManager class under various faulty
+ * or unexpected conditions during file handling and data management operations.
+ *
+ * Tests included:
+ * - Ensures that missing files during initialization are handled without crashing.
+ * - Validates that IOException during file save operations is handled internally.
+ * - Checks that corrupted input lines in the membership file are skipped gracefully.
+ *
+ * Each test guarantees that specific exception scenarios are managed effectively,
+ * without propagating unhandled errors to the user or the system.
+ */
 public class ExceptionHandlingTest {
 
     @Test

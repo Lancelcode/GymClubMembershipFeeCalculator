@@ -5,6 +5,17 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * The MemberFeeStrategyTest class contains unit tests to validate the behavior and correctness
+ * of implementations of the MemberFeeStrategy interface.
+ * It ensures that custom fee calculation logic and grade-related methods of different strategies work as expected.
+ *
+ * Tests include validation for:
+ * - Correct fee calculation for various membership grades (Standard, Premium, VIP), both with and without journal fees.
+ * - Proper identification of the membership grade names.
+ *
+ * The tests use JUnit as the testing framework and include assertions to verify outcomes.
+ */
 public class MemberFeeStrategyTest {
 
     @Test

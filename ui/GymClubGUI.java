@@ -7,6 +7,20 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
+/**
+ * The GymClubGUI class represents the graphical user interface (GUI) for a gym club management system.
+ * This GUI allows users to manage gym memberships, display the list of members, view membership receipts,
+ * and perform various related operations in an interactive way.
+ *
+ * The GymClubGUI provides buttons for the following functionalities:
+ * - Adding a new member
+ * - Displaying a list of registered members
+ * - Viewing a membership receipt history for a specific member
+ * - Exiting the application
+ *
+ * The class interacts with the MemberManager to handle membership-related operations,
+ * including adding members, retrieving registered members, and fetching membership history.
+ */
 public class GymClubGUI extends JFrame {
 
     private MemberManager manager;
