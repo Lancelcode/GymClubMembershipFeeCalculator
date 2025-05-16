@@ -17,8 +17,8 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class MemberManagerTest {
 
-    // WARNING: Using the real data file — ideally switch to "data/test_members.txt"
-    private static final String TEST_FILE_PATH = "data/test_members.txt";
+    // WARNING:use "data/test_members.txt.txt"
+    private static final String TEST_FILE_PATH = "data/test_members.txt.txt";
 
     /**
      * Clears the membership data file before each test to ensure a clean test environment.
@@ -91,12 +91,19 @@ public class MemberManagerTest {
      */
     @Test
     public void testTotalFeesCollected() {
-        MemberManager manager = new MemberManager();
-        manager.addMember("Dan", "Standard");  // 100 + 8
-        manager.addMember("Eve", "Premium");   // 150 + 8
-        manager.addMember("Dan", "VIP");       // 200 (no journal again)
+        MemberManager manager = new MembershipFlowTest.TestMemberManager(); // use the safe test subclass
+
+        manager.addMember("Dan", "Standard");   // 100 + 8
+        manager.addMember("Eve", "Premium");    // 150 + 8
+        manager.addMember("Dan", "VIP");        // 200 (no journal)
 
         double total = manager.getTotalFeesCollected();
-        assertEquals(108 + 158 + 200, total, 0.01);
+        assertEquals(108 + 158 + 200, total, 0.01);  // 466.0
     }
+    @AfterEach
+    public void cleanupTestFile() {
+        File testFile = new File("data/test_members.txt.txt");
+        if (testFile.exists()) testFile.delete();
+    }
+
 }

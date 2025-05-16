@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class BoundaryTest {
 
     // Path to a test-specific file used to prevent real data from being overwritten during testing
-    private static final String TEST_FILE_PATH = "data/test_members.txt";
+    protected  String TEST_FILE_PATH = "data/test_members.txt.txt";
 
     /**
      * This method runs before each test and ensures the test data file is deleted,
